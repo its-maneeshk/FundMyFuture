@@ -8,7 +8,6 @@
   --color-brand-red: #DC2626;
 }
 
-/* Optional Dot Matrix Background Overlay matching the banner */
 .bg-dot-pattern {
   background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
   background-size: 20px 20px;
