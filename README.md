@@ -122,3 +122,6 @@ python app.py
 [ ] Phase 3 (Weeks 5-6): Automation - Scheduled GitHub Actions daily scraping, error recovery.
 
 [ ] Phase 4 (Weeks 7-8): Polish & Deploy - OWASP security auditing, deployment to Render & Netlify.
+
+### Project Screenshot
+![Alternative text for screen readers](https://github.com/its-maneeshk/FundMyFuture/blob/dbe3053b4f592d24841426d0a833a760d7519a7f/frontend/public/ProjectScreenshot/Homepage.png)

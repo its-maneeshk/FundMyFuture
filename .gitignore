@@ -1,0 +1,4 @@
+backend/.venv/
+backend/app/__pycache__/
+backend/.env          <-- Make sure this is added!
+frontend/node_modules/
