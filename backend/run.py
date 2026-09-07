@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Allows your React frontend (localhost:5173) to call this API without CORS errors
+CORS(app)  # Enables cross-origin requests from React
 
 MOCK_SCHOLARSHIPS = [
     {
@@ -24,7 +24,7 @@ MOCK_SCHOLARSHIPS = [
         "deadline": "December 10, 2026",
         "trust_score": 89,
         "status": "Verified",
-        "description": "Financial support for women in cybersecurity, network defense, and AI safety programs.",
+        "description": "Financial support for students in cybersecurity, network defense, and AI safety programs.",
         "provider": "SecureFuture Alliance"
     },
     {
@@ -47,13 +47,6 @@ def get_scholarships():
         "count": len(MOCK_SCHOLARSHIPS),
         "data": MOCK_SCHOLARSHIPS
     })
-
-@app.route('/api/v1/scholarships/<id>', methods=['GET'])
-def get_scholarship_detail(id):
-    item = next((s for s in MOCK_SCHOLARSHIPS if s["id"] == id), None)
-    if not item:
-        return jsonify({"success": False, "message": "Listing not found"}), 404
-    return jsonify({"success": True, "data": item})
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
