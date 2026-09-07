@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand-dark: #021B79;
+  --color-brand-blue: #1D4ED8;
+  --color-brand-accent: #2563EB;
+  --color-brand-light: #F0F5FF;
+  --color-brand-red: #DC2626;
+}
+
+/* Optional Dot Matrix Background Overlay matching the banner */
+.bg-dot-pattern {
+  background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+  background-size: 20px 20px;
+}
