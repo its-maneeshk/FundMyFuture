@@ -156,4 +156,4 @@ python app.py
 
 ## System Overview
 
-![FundMyFuture Application Dashboard](https://github.com/its-maneeshk/FundMyFuture/blob/dbe3053b4f592d24841426d0a833a760d7519a7f/frontend/public/ProjectScreenshot/Homepage.png)
+![FundMyFuture Application Dashboard](frontend/public/ProjectScreenshot/Homepage.png)
