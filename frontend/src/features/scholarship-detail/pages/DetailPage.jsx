@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getScholarships } from '../../../services/scholarshipService';
-import { ShieldCheck, AlertTriangle, ArrowLeft, Building2, Calendar, DollarSign, ExternalLink } from 'lucide-react';
+import { getScholarships, verifyScholarship } from '../../../services/scholarshipService';
+import { ShieldCheck, ArrowLeft, Building2, Calendar, DollarSign, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
 
 export default function DetailPage() {
   const { id } = useParams();
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Custom Verification State
+  const [customTitle, setCustomTitle] = useState('');
+  const [customDescription, setCustomDescription] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
 
   useEffect(() => {
     getScholarships()
@@ -19,6 +25,29 @@ export default function DetailPage() {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleCustomVerify = async (e) => {
+    e.preventDefault();
+    if (!customTitle || !customDescription) return;
+
+    setVerifying(true);
+    setAiAnalysis(null);
+
+    try {
+      const res = await verifyScholarship({
+        title: customTitle,
+        provider: scholarship?.provider || 'External Provider',
+        description: customDescription,
+      });
+      if (res.success) {
+        setAiAnalysis(res.analysis);
+      }
+    } catch (err) {
+      console.error('AI Verification failed:', err);
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   if (loading) {
     return <div className="text-center py-20 text-slate-500">Loading opportunity details...</div>;
@@ -36,14 +65,14 @@ export default function DetailPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8">
       <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-brand-dark transition">
         <ArrowLeft className="w-4 h-4" />
         Back to Listings
       </Link>
 
       <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm space-y-6">
-        {/* Header Header */}
+        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-6 border-b border-slate-100">
           <div>
             <span className="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
@@ -84,21 +113,84 @@ export default function DetailPage() {
           </div>
         </div>
 
-        {/* Description Section */}
+        {/* Description */}
         <div className="space-y-2">
           <h3 className="text-lg font-bold text-brand-dark">Program Overview</h3>
           <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
             {scholarship.description}
           </p>
         </div>
+      </div>
 
-        {/* Action Button */}
-        <div className="pt-4 border-t border-slate-100 flex justify-end">
-          <button className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white font-bold rounded-2xl hover:bg-brand-blue transition shadow-md cursor-pointer">
-            <span>Apply on Official Portal</span>
-            <ExternalLink className="w-4 h-4" />
-          </button>
+      {/* Interactive AI Verification Widget */}
+      <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 space-y-6">
+        <div className="flex items-center gap-2 text-brand-dark">
+          <Sparkles className="w-6 h-6 text-brand-blue" />
+          <h3 className="text-xl font-bold">Run Live Gemini AI Fraud Scan</h3>
         </div>
+        <p className="text-sm text-slate-600">
+          Have an unverified scholarship offer? Paste its details below to run an instant Google Gemini AI scam risk analysis.
+        </p>
+
+        <form onSubmit={handleCustomVerify} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Scholarship Title</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Free Merit Grant 2026"
+              value={customTitle}
+              onChange={(e) => setCustomTitle(e.target.value)}
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-blue"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Listing Requirements / Details</label>
+            <textarea
+              required
+              rows={3}
+              placeholder="Paste email or website details here..."
+              value={customDescription}
+              onChange={(e) => setCustomDescription(e.target.value)}
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-blue"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={verifying}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-dark text-white font-bold text-xs rounded-xl hover:bg-brand-blue transition disabled:opacity-50 cursor-pointer"
+          >
+            {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            {verifying ? 'Analyzing with Gemini AI...' : 'Verify Listing Now'}
+          </button>
+        </form>
+
+        {/* AI Analysis Result */}
+        {aiAnalysis && (
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-3 mt-4">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-900">Analysis Verdict:</span>
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                aiAnalysis.trust_score >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {aiAnalysis.trust_score}% Trust Rating ({aiAnalysis.status})
+              </span>
+            </div>
+            
+            {aiAnalysis.flags && aiAnalysis.flags.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-red-600 uppercase mb-1">Detected Risk Indicators:</p>
+                <ul className="list-disc list-inside text-xs text-slate-600 space-y-1">
+                  {aiAnalysis.flags.map((flag, idx) => (
+                    <li key={idx}>{flag}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
