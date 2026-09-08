@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from app.models import db, Scholarship
 from app.ai.verifier import verify_scholarship_with_gemini
+from app.scrapers.scholarship_scraper import scrape_and_store_scholarships
 
 app = Flask(__name__)
 CORS(app)
@@ -76,6 +77,13 @@ def verify_listing():
         "success": True,
         "analysis": analysis
     })
+
+@app.route('/api/v1/scrape', methods=['POST'])
+def trigger_scrape():
+    success = scrape_and_store_scholarships(app)
+    if success:
+        return jsonify({"success": True, "message": "Scraping cycle completed successfully."})
+    return jsonify({"success": False, "message": "Scraping failed or no new listings found."}), 500
 
 if __name__ == '__main__':
     with app.app_context():
