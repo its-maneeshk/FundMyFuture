@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Calendar, DollarSign, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom'; // 1. Added Link import
 
 export default function ScholarshipCard({ item }) {
   return (
@@ -35,10 +36,14 @@ export default function ScholarshipCard({ item }) {
           </div>
         </div>
 
-        <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-dark text-white text-xs font-bold rounded-xl hover:bg-brand-blue transition cursor-pointer">
-          Apply Now
+        {/* 2. Replaced <button> with <Link to={`/scholarship/${item.id}`}> */}
+        <Link
+          to={`/scholarship/${item.id}`}
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-dark text-white text-xs font-bold rounded-xl hover:bg-brand-blue transition"
+        >
+          View Details
           <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        </Link>
       </div>
     </div>
   );

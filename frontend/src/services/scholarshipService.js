@@ -5,6 +5,11 @@ export const getScholarships = async () => {
   return response.data;
 };
 
+export const triggerScrape = async () => {
+  const response = await api.post('/scrape');
+  return response.data;
+};
+
 export const verifyScholarship = async (payload) => {
   const response = await api.post('/verify', payload);
   return response.data;
