@@ -25,7 +25,7 @@ export default function HeroBanner({ searchQuery, setSearchQuery }) {
         </div>
 
         {/* Heading */}
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight uppercase">
+        <h1 className="text-2xl sm:text-[2.5rem] font-black tracking-tight leading-tight uppercase">
           Find Genuine <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-200 to-white">
             Scholarships
