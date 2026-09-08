@@ -1,7 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 from app.models import db, Scholarship
+from app.ai.verifier import verify_scholarship_with_gemini
 
 app = Flask(__name__)
 CORS(app)
@@ -13,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-# Seed initial data if table is empty
+# Seed initial database
 def seed_database():
     if Scholarship.query.count() == 0:
         initial_data = [
@@ -50,7 +51,6 @@ def seed_database():
         ]
         db.session.bulk_save_objects(initial_data)
         db.session.commit()
-        print("Database seeded with initial scholarships.")
 
 @app.route('/api/v1/scholarships', methods=['GET'])
 def get_scholarships():
@@ -59,6 +59,22 @@ def get_scholarships():
         "success": True,
         "count": len(scholarships),
         "data": [s.to_dict() for s in scholarships]
+    })
+
+@app.route('/api/v1/verify', methods=['POST'])
+def verify_listing():
+    data = request.get_json() or {}
+    title = data.get('title', '')
+    provider = data.get('provider', '')
+    description = data.get('description', '')
+
+    if not title or not description:
+        return jsonify({"success": False, "message": "Title and description are required"}), 400
+
+    analysis = verify_scholarship_with_gemini(title, provider, description)
+    return jsonify({
+        "success": True,
+        "analysis": analysis
     })
 
 if __name__ == '__main__':
