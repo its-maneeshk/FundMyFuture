@@ -1,4 +1,9 @@
+# Environment variables
+.env
+*.env
+backend/.env
+
+# Dependencies & build files
+node_modules/
 backend/.venv/
-backend/app/__pycache__/
-backend/.env          <-- Make sure this is added!
-frontend/node_modules/
+__pycache__/
